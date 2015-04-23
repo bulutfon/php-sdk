@@ -57,7 +57,7 @@ Bunun için
 
 methodunu kullanabilirsiniz.
 
-### Santrale bağlı telefon numaraları ve numara detaylarına erişme
+### Telefon numaraları ve telefon numara detaylarına erişme
 
 Bunun için;
 
