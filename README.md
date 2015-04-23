@@ -70,17 +70,6 @@ Bunun için;
 
 methodlarını kullanabilirsiniz.
 
-### Santrallere ve santral detaylarına erişme
-
-Bunun için;
-
-```php
-	$provider->getDids($token); // Santral listesine erişir
-	$provider->getDid($token, $id) // Id'si verilen santral detayını döndürür
-```
-
-methodlarını kullanabilirsiniz.
-
 ### Dahililere ve dahili detaylarına erişme
 
 Bunun için;
