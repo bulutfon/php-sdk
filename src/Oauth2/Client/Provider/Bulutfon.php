@@ -1,13 +1,16 @@
 <?php
 namespace Bulutfon\OAuth2\Client\Provider;
 
+use Bulutfon\OAuth2\Client\Entity\CallFlow;
 use Bulutfon\OAuth2\Client\Entity\CdrObject;
 use Bulutfon\OAuth2\Client\Entity\Did;
 use Bulutfon\OAuth2\Client\Entity\Extension;
 use Bulutfon\OAuth2\Client\Entity\Group;
+use Bulutfon\OAuth2\Client\Entity\Origination;
 use Bulutfon\OAuth2\Client\Entity\User;
 use Bulutfon\OAuth2\Client\Entity\Cdr;
 use Bulutfon\OAuth2\Client\Entity\WorkingHour;
+use Guzzle\Http\Exception\BadResponseException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Provider\AbstractProvider;
 
@@ -100,6 +103,34 @@ class Bulutfon extends AbstractProvider
         return $accessToken;
     }
 
+    public function fetchProviderData($url, array $headers = [])
+    {
+        try {
+            $client = $this->getHttpClient();
+            $client->setBaseUrl($url);
+
+            if ($headers) {
+                $client->setDefaultOption('headers', $headers);
+            }
+
+            $request = $client->get()->send();
+            $response = $request->getBody();
+        } catch (BadResponseException $e) {
+            // @codeCoverageIgnoreStart
+            $raw_response = explode("\n", $e->getResponse());
+            $response = $e->getResponse()->getBody();
+            $response = json_decode($response);
+
+            if($response->error == 'Token expired') {
+                $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+                header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
+            }
+            throw new IDPException(end($raw_response));
+            // @codeCoverageIgnoreEnd
+        }
+
+        return $response;
+    }
     /* USER METHODS */
 
     public function urlUserDetails(AccessToken $token)
@@ -343,24 +374,58 @@ class Bulutfon extends AbstractProvider
     protected function urlCdr(AccessToken $token, $uuid = null, $page, $params = [])
     {
         $url = "";
-        array_push($params, $token->accessToken);
+        $params['access_token'] = $token->accessToken;
         $par = http_build_query($params);
-
         if($uuid) {
             $url = "http://bulutfon-api.dev/cdrs/". $uuid ."?access_token=".$token;
         } else {
-            $url = "http://bulutfon-api.dev/cdrs?page=". $page ."&".$par;
+            $url = "http://bulutfon-api.dev/cdrs?page=". $page ."&". $par;
         }
         return $url;
     }
 
     protected function fetchCdrs(AccessToken $token, $uuid = null, $page, $params = [])
     {
-
         $url = $this->urlCdr($token, $uuid, $page, $params);
         $headers = $this->getHeaders($token);
 
         return $this->fetchProviderData($url, $headers);
+    }
+
+    protected function origination($response) {
+        $originations = array();
+        foreach($response as $o) {
+            $origination = new Origination();
+            $origination->exchangeArray([
+                'destination' => $o->destination,
+                'start_time' => $o->start_time,
+                'answer_time' => $o->answer_time,
+                'hangup_time' => $o->hangup_time,
+                'result' => $o->result,
+            ]);
+            array_push($originations, $origination);
+        }
+        return $originations;
+    }
+
+    protected function callFlow($response)
+    {
+        $call_flows = array();
+        foreach($response as $cf) {
+            $call_flow = new CallFlow();
+            $call_flow->exchangeArray([
+                'callee' => $cf->callee,
+                'start_time' => $cf->start_time,
+                'answer_time' => $cf->answer_time,
+                'hangup_time' => $cf->hangup_time,
+                'redirection' => $cf->redirection,
+                'redirection_target' => property_exists($cf, 'redirection_target') ? $cf->redirection_target : null,
+                'origination' => property_exists($cf, 'origination') ? $this->origination($cf->origination) : null,
+            ]);
+            array_push($call_flows, $call_flow);
+        }
+
+        return $call_flows;
     }
 
     protected function cdr($response, $id = null) {
@@ -371,12 +436,15 @@ class Bulutfon extends AbstractProvider
             'direction' => $response->direction,
             'caller' => $response->caller,
             'callee' => $response->callee,
+            'extension' => property_exists($response, 'extension') ? $response->extension : null,
+            'call_price' => property_exists($response, 'call_price') ? $response->call_price : null,
             'call_time' => $response->call_time,
             'answer_time' => $response->answer_time,
             'hangup_time' => $response->hangup_time,
             'call_record' => $response->call_record,
             'hangup_cause' => $response->hangup_cause,
             'hangup_state' => $response->hangup_state,
+            'call_flow' => property_exists($response, "call_flow") ? $this->callFlow($response->call_flow) : null,
         ]);
         return $cdr;
     }
@@ -409,9 +477,8 @@ class Bulutfon extends AbstractProvider
     }
 
     public function getCdrs(AccessToken $token, $params = [], $page = 1) {
-        echo $this->urlCdr($token, null, $page, $params);
-//        $response = $this->fetchCdrs($token, null, $page, $params);
-//        return $this->cdrs(json_decode($response), $token);
+        $response = $this->fetchCdrs($token, null, $page, $params);
+        return $this->cdrs(json_decode($response), $token);
     }
 
     public function getCdr(AccessToken $token, $uuid) {
