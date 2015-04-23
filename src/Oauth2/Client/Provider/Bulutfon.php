@@ -20,14 +20,18 @@ class Bulutfon extends AbstractProvider
     public $uidKey = 'user_id';
     public $responseType = 'json';
 
+    public $baseUrl = "https://api.bulutfon.com";
+    public $authUrl = "https://www.bulutfon.com/oauth/authorize";
+    public $tokenUrl = "https://www.bulutfon.com/oauth/token";
+
     public function urlAuthorize()
     {
-        return 'http://www.bulutfon.dev/oauth/authorize';
+        return $this->authUrl;
     }
 
     public function urlAccessToken()
     {
-        return 'http://www.bulutfon.dev/oauth/token';
+        return $this->tokenUrl;
     }
 
     public function getAccessToken($grant = 'authorization_code', $params = [])
@@ -135,7 +139,7 @@ class Bulutfon extends AbstractProvider
 
     public function urlUserDetails(AccessToken $token)
     {
-        return "http://bulutfon-api.dev/me?access_token=".$token;
+        return $this->baseUrl."/me?access_token=".$token;
     }
     public function userDetails($response, AccessToken $token)
     {
@@ -169,9 +173,9 @@ class Bulutfon extends AbstractProvider
     {
         $url = "";
         if($id) {
-            $url = "http://bulutfon-api.dev/dids/". $id ."?access_token=".$token;
+            $url = $this->baseUrl."/dids/". $id ."?access_token=".$token;
         } else {
-            $url = "http://bulutfon-api.dev/dids?access_token=".$token;
+            $url = $this->baseUrl."/dids?access_token=".$token;
         }
         return $url;
     }
@@ -248,9 +252,9 @@ class Bulutfon extends AbstractProvider
     {
         $url = "";
         if($id) {
-            $url = "http://bulutfon-api.dev/extensions/". $id ."?access_token=".$token;
+            $url = $this->baseUrl."/extensions/". $id ."?access_token=".$token;
         } else {
-            $url = "http://bulutfon-api.dev/extensions?access_token=".$token;
+            $url = $this->baseUrl."/extensions?access_token=".$token;
         }
         return $url;
     }
@@ -312,9 +316,9 @@ class Bulutfon extends AbstractProvider
     {
         $url = "";
         if($id) {
-            $url = "http://bulutfon-api.dev/groups/". $id ."?access_token=".$token;
+            $url = $this->baseUrl."/groups/". $id ."?access_token=".$token;
         } else {
-            $url = "http://bulutfon-api.dev/groups?access_token=".$token;
+            $url = $this->baseUrl."/groups?access_token=".$token;
         }
         return $url;
     }
@@ -377,9 +381,9 @@ class Bulutfon extends AbstractProvider
         $params['access_token'] = $token->accessToken;
         $par = http_build_query($params);
         if($uuid) {
-            $url = "http://bulutfon-api.dev/cdrs/". $uuid ."?access_token=".$token;
+            $url = $this->baseUrl."/cdrs/". $uuid ."?access_token=".$token;
         } else {
-            $url = "http://bulutfon-api.dev/cdrs?page=". $page ."&". $par;
+            $url = $this->baseUrl."/cdrs?page=". $page ."&". $par;
         }
         return $url;
     }
