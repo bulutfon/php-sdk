@@ -1,5 +1,4 @@
 # Bulutfon SDK
---------------
 
 Bulutfon API'ye erişmek için [Php oauth2-client](https://github.com/thephpleague/oauth2-client) provider'ı. 
 
@@ -45,8 +44,7 @@ komutunu koşarak projenize dahil ettikten sonra kullanmaya başlayabilirsiniz.
 şeklinde expire olmuş token'ınızı yenileyebilirsiniz. İstek sırasında token expire olduysa tekrar tanımladığınız callback_url'e `refresh_token=true` ve `back=istek yapılan url` parametreleri ile yönlenecektir. bu parametreleri yakalayıp tokenınızı yenileyebilirsiniz.
 
 
-##İşlevler
-----------
+## İşlevler
 
 ### Kullanıcı bilgilerine erişme
 
@@ -59,7 +57,7 @@ Bunun için
 
 methodunu kullanabilirsiniz.
 
-### Santrallere ve santral detaylarına erişme
+### Telefon numaraları ve telefon numara detaylarına erişme
 
 Bunun için;
 
