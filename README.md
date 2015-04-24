@@ -25,7 +25,13 @@ komutunu koşarak projenize dahil ettikten sonra kullanmaya başlayabilirsiniz.
 	]); 
 ```
 
-Şeklinde provider'ınızı tanımladıktan sonra, callback olarak tanımladığınız sayfada
+Şeklinde provider'ınızı tanımladıktan sonra, kullanıcıdan izin istemek için
+
+```php
+ $authUrl = $provider->getAuthorizationUrl();
+ header('Location: '.$authUrl);
+```
+ile kullanıcıyı uygulama izin sayfasına yönlendirebilirsiniz. Kullanıcı uygulama izni verdikten sonra, callback olarak tanımladığınız sayfada
 
 ```php
 	$token = $provider->getAccessToken('authorization_code', [
