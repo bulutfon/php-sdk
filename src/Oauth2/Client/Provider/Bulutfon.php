@@ -11,6 +11,7 @@ use Bulutfon\OAuth2\Client\Entity\User;
 use Bulutfon\OAuth2\Client\Entity\Cdr;
 use Bulutfon\OAuth2\Client\Entity\WorkingHour;
 use Guzzle\Http\Exception\BadResponseException;
+use League\OAuth2\Client\Exception\IDPException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Provider\AbstractProvider;
 
@@ -125,7 +126,7 @@ class Bulutfon extends AbstractProvider
             $response = $e->getResponse()->getBody();
             $response = json_decode($response);
 
-            if($response->error == 'Token expired') {
+            if($response && $response->error == 'Token expired') {
                 $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
                 header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
             }

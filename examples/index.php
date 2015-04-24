@@ -1,3 +1,11 @@
+<?php
+session_start();
+require '../vendor/autoload.php';
+require_once './helpers/variables.php';
+require_once './helpers/functions.php';
+
+$token = getAccessTokenFromSession($provider);
+?>
 <html>
 <head>
     <title>BULUTFON API EXAMPLE</title>
