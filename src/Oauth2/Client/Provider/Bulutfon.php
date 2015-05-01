@@ -25,6 +25,15 @@ class Bulutfon extends AbstractProvider
     public $authUrl = "https://www.bulutfon.com/oauth/authorize";
     public $tokenUrl = "https://www.bulutfon.com/oauth/token";
 
+    public $verifySSL = true;
+
+    public function getHttpClient()
+    {
+        $client = clone $this->httpClient;
+        $client->setSslVerification($this->verifySSL);
+        return $client;
+    }
+
     public function urlAuthorize()
     {
         return $this->authUrl;

@@ -21,7 +21,8 @@ komutunu koşarak projenize dahil ettikten sonra kullanmaya başlayabilirsiniz.
 	$provider = new \Bulutfon\OAuth2\Client\Provider\Bulutfon([
     	'clientId'          => '{client-id}',
     	'clientSecret'      => '{client-secret}',
-    	'redirectUri'       => 'https://example.com/callback-url'
+    	'redirectUri'       => 'https://example.com/callback-url',
+    	//'verifySSL        => false (Varsayılan olarak true'dur eğer ssl doğrulaması istenmiyorsa eklenmelidir.
 	]); 
 ```
 
