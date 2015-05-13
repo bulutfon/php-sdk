@@ -24,13 +24,9 @@ class Bulutfon extends AbstractProvider
     public $uidKey = 'user_id';
     public $responseType = 'json';
 
-//    public $baseUrl = "https://api.bulutfon.com";
-//    public $authUrl = "https://www.bulutfon.com/oauth/authorize";
-//    public $tokenUrl = "https://www.bulutfon.com/oauth/token";
-
-    public $baseUrl = "http://bulutfon-api.dev";
-    public $authUrl = "http://bulutfon.dev/oauth/authorize";
-    public $tokenUrl = "http://bulutfon.dev/oauth/token";
+    public $baseUrl = "https://api.bulutfon.com";
+    public $authUrl = "https://www.bulutfon.com/oauth/authorize";
+    public $tokenUrl = "https://www.bulutfon.com/oauth/token";
 
     public $verifySSL = true;
 
