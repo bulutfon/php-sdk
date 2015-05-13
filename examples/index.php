@@ -17,6 +17,8 @@ $token = getAccessTokenFromSession($provider);
     <li><a href="extensions">EXTENSIONS</a></li>
     <li><a href="groups">GROUPS</a></li>
     <li><a href="cdrs">CDRS</a></li>
+    <li><a href="incoming_faxes">INCOMING FAXES</a></li>
+    <li><a href="outgoing_faxes">OUTGOING FAXES</a></li>
 </ul>
 </body>
 </html>

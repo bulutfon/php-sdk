@@ -6,7 +6,10 @@ use Bulutfon\OAuth2\Client\Entity\CdrObject;
 use Bulutfon\OAuth2\Client\Entity\Did;
 use Bulutfon\OAuth2\Client\Entity\Extension;
 use Bulutfon\OAuth2\Client\Entity\Group;
+use Bulutfon\OAuth2\Client\Entity\IncomingFax;
 use Bulutfon\OAuth2\Client\Entity\Origination;
+use Bulutfon\OAuth2\Client\Entity\OutgoingFax;
+use Bulutfon\OAuth2\Client\Entity\OutgoingFaxRecipient;
 use Bulutfon\OAuth2\Client\Entity\User;
 use Bulutfon\OAuth2\Client\Entity\Cdr;
 use Bulutfon\OAuth2\Client\Entity\WorkingHour;
@@ -21,9 +24,13 @@ class Bulutfon extends AbstractProvider
     public $uidKey = 'user_id';
     public $responseType = 'json';
 
-    public $baseUrl = "https://api.bulutfon.com";
-    public $authUrl = "https://www.bulutfon.com/oauth/authorize";
-    public $tokenUrl = "https://www.bulutfon.com/oauth/token";
+//    public $baseUrl = "https://api.bulutfon.com";
+//    public $authUrl = "https://www.bulutfon.com/oauth/authorize";
+//    public $tokenUrl = "https://www.bulutfon.com/oauth/token";
+
+    public $baseUrl = "http://bulutfon-api.dev";
+    public $authUrl = "http://bulutfon.dev/oauth/authorize";
+    public $tokenUrl = "http://bulutfon.dev/oauth/token";
 
     public $verifySSL = true;
 
@@ -145,6 +152,40 @@ class Bulutfon extends AbstractProvider
 
         return $response;
     }
+
+    public function postProviderData($url, $params, array $headers = [])
+    {
+        try {
+            $client = $this->getHttpClient();
+            $client->setBaseUrl($url);
+
+            if ($headers) {
+                $client->setDefaultOption('headers', $headers);
+            }
+
+            $request = $client->post($url,array(
+                'content-type' => 'application/json'
+            ),array());
+            $request->setBody(json_encode($params)); #set body!
+            $request = $request->send();
+            $response = $request->getBody();
+        } catch (BadResponseException $e) {
+            // @codeCoverageIgnoreStart
+            $raw_response = explode("\n", $e->getResponse());
+            $response = $e->getResponse()->getBody();
+            $response = json_decode($response);
+
+            if($response && $response->error == 'Token expired') {
+                $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+                header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
+            }
+            throw new IDPException(end($raw_response));
+            // @codeCoverageIgnoreEnd
+        }
+
+        return $response;
+    }
+
     /* USER METHODS */
 
     public function urlUserDetails(AccessToken $token)
@@ -502,5 +543,171 @@ class Bulutfon extends AbstractProvider
 
     public function getUser(AccessToken $token) {
         return $this->getUserDetails($token);
+    }
+
+    /* CALL RECORD METHODS */
+
+    protected function urlCallRecord(AccessToken $token, $id = null)
+    {
+        $url = $this->baseUrl."/call-records/". $id ."?access_token=".$token;
+        return $url;
+    }
+
+    public function getCallRecord(AccessToken $token, $id, $path) {
+        $url = $this->urlCallRecord($token, $id);
+        $f = file_get_contents($url);
+        file_put_contents($path, $f);
+    }
+
+    /* INCOMING FAX METHODS */
+
+    protected function urlIncomingFax(AccessToken $token, $id = null)
+    {
+        $url = "";
+        if($id) {
+            $url = $this->baseUrl."/incoming-faxes/". $id ."?access_token=".$token;
+        } else {
+            $url = $this->baseUrl."/incoming-faxes?access_token=".$token;
+        }
+        return $url;
+    }
+
+    protected function fetchIncomingFaxes(AccessToken $token, $id = null)
+    {
+        $url = $this->urlIncomingFax($token, $id);
+        $headers = $this->getHeaders($token);
+
+        return $this->fetchProviderData($url, $headers);
+    }
+
+    protected function incomingFax($response, AccessToken $token)
+    {
+        $incomingFax = new IncomingFax();
+        $incomingFax->exchangeArray([
+            'uuid' => $response->uuid,
+            'sender' => $response->sender,
+            'receiver' => $response->receiver,
+            'created_at' => $response->created_at
+        ]);
+
+        return $incomingFax;
+    }
+
+    protected function incomingFaxes($response, AccessToken $token) {
+        $incoming_faxes = array();
+        $response_incoming_faxes = $response->incoming_faxes;
+        foreach($response_incoming_faxes as $response_incoming_fax) {
+            $incoming_fax = $this->incomingFax($response_incoming_fax, $token);
+
+            array_push($incoming_faxes, $incoming_fax);
+
+        }
+        return $incoming_faxes;
+    }
+
+    public function getIncomingFaxes(AccessToken $token) {
+        $response = $this->fetchIncomingFaxes($token);
+        return $this->incomingFaxes(json_decode($response), $token);
+    }
+
+    public function getIncomingFax(AccessToken $token, $id, $path) {
+        $url = $this->urlIncomingFax($token, $id);
+        $f = file_get_contents($url);
+        file_put_contents($path, $f);
+    }
+
+    /* OUTGOING FAX METHODS */
+
+    protected function urlOutgoingFax(AccessToken $token, $id = null)
+    {
+        $url = "";
+        if($id) {
+            $url = $this->baseUrl."/outgoing-faxes/". $id ."?access_token=".$token;
+        } else {
+            $url = $this->baseUrl."/outgoing-faxes?access_token=".$token;
+        }
+        return $url;
+    }
+
+    protected function fetchOutgoingFaxes(AccessToken $token, $id = null)
+    {
+        $url = $this->urlOutgoingFax($token, $id);
+
+        $headers = $this->getHeaders($token);
+
+        return $this->fetchProviderData($url, $headers);
+    }
+
+    protected function outGoingFaxRecipients($response, AccessToken $token) {
+        $recipients = array();
+        $response_recipients = $response->recipients;
+        foreach($response_recipients as $response_recipient) {
+            $recipient = new OutgoingFaxRecipient();
+            $recipient->exchangeArray([
+                'number' => $response_recipient->number,
+                'state' => $response_recipient->state,
+            ]);
+            array_push($recipients, $recipient);
+        }
+
+        return $recipients;
+    }
+
+    protected function outGoingFax($response, AccessToken $token, $id = null)
+    {
+        $outgoingFax = new OutgoingFax();
+        $outgoingFax->exchangeArray([
+            'id' => $response->id,
+            'title' => $response->title,
+            'did' => $response->did,
+            'recipient_count' => $response->recipient_count,
+            'recipients' => $id ? $this->outGoingFaxRecipients($response, $token) : null,
+            'created_at' => $response->created_at
+        ]);
+
+        return $outgoingFax;
+    }
+
+    protected function outGoingFaxes($response, AccessToken $token, $id = null) {
+        if($id) {
+            return $this->outGoingFax($response->fax, $token, $id);
+        } else {
+            $faxes = array();
+            $response_faxes = $response->faxes;
+            foreach($response_faxes as $response_fax) {
+                $fax = $this->outGoingFax($response_fax, $token);
+
+                array_push($faxes, $fax);
+
+            }
+
+            return $faxes;
+        }
+    }
+
+    public function getOutgoingFaxes(AccessToken $token) {
+        $response = $this->fetchOutgoingFaxes($token);
+        return $this->outGoingFaxes(json_decode($response), $token);
+    }
+
+    public function getOutgoingFax(AccessToken $token, $id) {
+        $response = $this->fetchOutgoingFaxes($token, $id);
+        return $this->outGoingFaxes(json_decode($response), $token, $id);
+    }
+
+    public function prepareFaxAttachment($path) {
+        $type = mime_content_type($path);
+        $basename = basename($path, pathinfo($path, PATHINFO_EXTENSION));
+        $data = file_get_contents($path);
+        $base64 = 'data:'. $type . ';name:'. $basename .';base64,' . base64_encode($data);
+        return $base64;
+    }
+
+    public function sendFax(AccessToken $token, $params) {
+        $url = $this->urlOutgoingFax($token);
+        $f_path = $params['attachment'];
+        $params['attachment'] = $this->prepareFaxAttachment($f_path);
+        $response = $this->postProviderData($url, $params);
+        return json_decode($response);
     }
 }

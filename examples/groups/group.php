@@ -34,5 +34,6 @@ if(isset($_GET['id'])) {
                     <?php } ?>
             </ul>
         </li>
+    </ul>
 </body>
 </html>

@@ -24,7 +24,6 @@ $cdrs = $cdrObj->cdrs;
     <table>
         <thead>
             <tr style="text-align: center">
-                <th>#</td>
                 <th>Call Type</td>
                 <th>Direction</td>
                 <th>Caller</td>
@@ -50,7 +49,11 @@ $cdrs = $cdrObj->cdrs;
                     <td><?= $cdr->call_record; ?></td>
                     <td><?= $cdr->hangup_cause; ?></td>
                     <td><?= $cdr->hangup_state; ?></td>
-                    <td><a href="cdr.php?id=<?= $cdr->uuid; ?>">Detail</a></td>
+                    <td>
+                        <a href="cdr.php?id=<?= $cdr->uuid; ?>">Detail</a>
+                        <? if($cdr->call_record == 'Var') {
+                            echo("| <a href='call_record.php?id=$cdr->uuid'>Download Call Record</a> ");
+                        } ?></td>
                 </tr>
             <?php } ?>
         </tbody>
