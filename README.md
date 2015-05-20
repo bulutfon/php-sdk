@@ -75,13 +75,28 @@ Bunun için;
 
 methodlarını kullanabilirsiniz.
 
-### Dahililere ve dahili detaylarına erişme
+### Dahililere ve dahili detaylarına erişme, dahili oluşturma, güncelleme ve silme
 
 Bunun için;
 
 ```php
 	$provider->getExtensions($token); // Dahili listesine erişir
 	$provider->getExtension($token, $id) // Id'si verilen dahili detayını döndürür
+	$params = array(
+        'full_name' => $_POST['full_name'], #required
+        'email' => $_POST['email'], #required
+        'did' => $_POST['did'], #required
+        'number' => $_POST['number'], #required
+        'voicemail' => $_POST['voicemail'], #required
+        'acl' => $_POST['acl'], #required
+        'redirection_type' => $_POST['redirection_type'], #required
+        'destination_type' => $_POST['destination_type'], #required unless redirection_type is not NONE or EXTERNAL
+        'destination_number' => $_POST['destination_number'], #required unless redirection_type is not NONE or EXTERNAL
+        'external_number' => $_POST['external_number'] #required if redirection_type is EXTERNAL
+    );
+	$provider->createExtension($token, $params) // Verilen parametrelere göre yeni dahili oluşturur.
+	$provider->updateExtension($token, $id, $params) // Verilen parametrelere göre dahiliyi günceller
+	$provider->deleteExtension($token, $id) // Dahiliyi siler
 ```
 
 methodlarını kullanabilirsiniz.
@@ -97,13 +112,17 @@ Bunun için;
 
 methodlarını kullanabilirsiniz.
 
-### Arama kayıtlarına ve arama detaylarına erişme
+### Arama kayıtlarına ve arama detaylarına erişme ve ses kayıtlarını indirme
 
 Bunun için;
 
 ```php
 	$provider->getCdrs($token, $params, $page); // Cdr listesine erişir
 	$provider->getCdr($token, $uid) // Uid'si verilen cdr detayını döndürür
+	# Arama kaydını indirmek için
+	$filename = $id.'.wav';
+    $save_path = getcwd().'/'.$filename;
+    $call_record = $provider->getCallRecord($token, $id, $save_path); # $save_path değişkeni ile verilen pathe ses kaydını kaydeder. (Dosya yazma izinlerinin doğru ayarlandığına emin olunuz.)
 ```
 
 methodlarını kullanabilirsiniz.
@@ -112,5 +131,34 @@ burada `$params` değişkeni array olup, filtreleme yapmak isterseniz kullanaca�
 
 `$page` değişkeni ise erişmek istediğiniz sayfayı belirtir.
 
+
+### Gelen fakslara erişme ve faks dosyasını indirme
+
+Bunun için;
+
+```php
+	$provider->getIncomingFaxes($token); // Gelen faksları listeler
+	# Faks dökümanını indirmek için
+    $filename = $id.'.tiff';
+    $save_path = getcwd().'/'.$filename;
+    $incomingFax = $provider->getIncomingFax($token, $id, $save_path); # $save_path değişkeni ile verilen pathe faks dökğmanını tiff dosyası olarak. (Dosya yazma izinlerinin doğru ayarlandığına emin olunuz.)
+```
+
+methodlarını kullanabilirsiniz.
+
+### Giden fakslara erişme ve faks gönderme
+
+Bunun için;
+
+```php
+	$provider->getOutgoingFaxes($token); // Giden faksları listeler
+	$provider->getOutgoingFax($token, $id); // Giden faks detayını gösterir
+	# Faks Göndermek için
+    $file_path = getcwd().'/../incoming_faxes/abc.pdf';
+    $arr = array('title' => 'API TEST', 'receivers' => '90850885xxxx,90850885yyyy', 'did' => "90850885xxxx", 'attachment' => $file_path);
+    $resp = $provider->sendFax($token, $arr); # $file_path değişkeni ile dosya yolu verilen belgeyi, receivers parametresindeki alıcılara faks olarak gönderir. (Dosya okuma izinlerinin doğru ayarlandığına emin olunuz.)
+```
+
+methodlarını kullanabilirsiniz.
 Örnek kullanımları görmek için ve erişebileceğiniz değişkenler için [örnek uygulamamızı](https://github.com/bulutfon/php-sdk/tree/master/examples) inceleyebilirsiniz.
     
