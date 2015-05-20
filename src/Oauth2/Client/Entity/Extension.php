@@ -15,6 +15,11 @@ class Extension extends BaseEntity {
     protected $caller_name;
     protected $email;
     protected $did;
+    protected $voice_mail;
+    protected $redirection_type;
+    protected $destination_type;
+    protected $destination_number;
+    protected $external_number;
     protected $acl;
 
     public function getArrayCopy()
@@ -26,6 +31,11 @@ class Extension extends BaseEntity {
             'caller_name' => $this->caller_name,
             'email' => $this->email,
             'did' => $this->did,
+            'voice_mail' => $this->voice_mail,
+            'redirection_type' => $this->redirection_type,
+            'destination_type' => $this->destination_type,
+            'destination_number' => $this->destination_number,
+            'external_number' => $this->external_number,
             'acl' => $this->acl,
         ];
     }

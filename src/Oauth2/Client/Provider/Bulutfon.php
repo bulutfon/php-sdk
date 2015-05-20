@@ -175,6 +175,70 @@ class Bulutfon extends AbstractProvider
                 $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
                 header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
             }
+            print_r($raw_response);
+            throw new IDPException(end($raw_response));
+            // @codeCoverageIgnoreEnd
+        }
+
+        return $response;
+    }
+
+    public function putProviderData($url, $params, array $headers = [])
+    {
+        try {
+            $client = $this->getHttpClient();
+            $client->setBaseUrl($url);
+
+            if ($headers) {
+                $client->setDefaultOption('headers', $headers);
+            }
+
+            $request = $client->put($url,array(
+                'content-type' => 'application/json'
+            ),array());
+            $request->setBody(json_encode($params)); #set body!
+            $request = $request->send();
+            $response = $request->getBody();
+        } catch (BadResponseException $e) {
+            // @codeCoverageIgnoreStart
+            $raw_response = explode("\n", $e->getResponse());
+            $response = $e->getResponse()->getBody();
+            $response = json_decode($response);
+
+            if($response && $response->error == 'Token expired') {
+                $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+                header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
+            }
+            print_r($raw_response);
+            throw new IDPException(end($raw_response));
+            // @codeCoverageIgnoreEnd
+        }
+
+        return $response;
+    }
+
+    public function deleteProviderData($url, array $headers = [])
+    {
+        try {
+            $client = $this->getHttpClient();
+            $client->setBaseUrl($url);
+
+            if ($headers) {
+                $client->setDefaultOption('headers', $headers);
+            }
+            $request = $client->delete()->send();
+            $response = $request->getBody();
+        } catch (BadResponseException $e) {
+            // @codeCoverageIgnoreStart
+            $raw_response = explode("\n", $e->getResponse());
+            $response = $e->getResponse()->getBody();
+            $response = json_decode($response);
+
+            if($response && $response->error == 'Token expired') {
+                $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+                header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
+            }
+            print_r($raw_response);
             throw new IDPException(end($raw_response));
             // @codeCoverageIgnoreEnd
         }
@@ -325,6 +389,11 @@ class Bulutfon extends AbstractProvider
             'caller_name' => $response->caller_name,
             'email' => $response->email,
             'did' => $id ? $response->did : null,
+            'voice_mail' => property_exists($response, "voice_mail") ? $response->voice_mail : null,
+            'redirection_type' => property_exists($response, "redirection_type") ? $response->redirection_type : null,
+            'destination_type' => property_exists($response, "destination_type") ? $response->destination_type : null,
+            'destination_number' => property_exists($response, "destination_number") ? $response->destination_number : null,
+            'external_number' => property_exists($response, "external_number") ? $response->external_number : null,
             'acl' => $id ? $response->acl : null,
         ]);
 
@@ -355,6 +424,24 @@ class Bulutfon extends AbstractProvider
     public function getExtension(AccessToken $token, $id) {
         $response = $this->fetchExtensions($token, $id);
         return $this->extensions(json_decode($response), $token, $id);
+    }
+
+    public function createExtension(AccessToken $token, $params) {
+        $url = $this->urlExtension($token);
+        $response = $this->postProviderData($url, $params);
+        return json_decode($response);
+    }
+
+    public function updateExtension(AccessToken $token, $id, $params) {
+        $url = $this->urlExtension($token, $id);
+        $response = $this->putProviderData($url, $params);
+        return json_decode($response);
+    }
+
+    public function deleteExtension(AccessToken $token, $id) {
+        $url = $this->urlExtension($token, $id);
+        $response = $this->deleteProviderData($url);
+        return json_decode($response);
     }
 
     /* GROUP METHODS */
@@ -695,7 +782,7 @@ class Bulutfon extends AbstractProvider
         $type = mime_content_type($path);
         $basename = basename($path, pathinfo($path, PATHINFO_EXTENSION));
         $data = file_get_contents($path);
-        $base64 = 'data:'. $type . ';name:'. $basename .';base64,' . base64_encode($data);
+        $base64 = 'data:'. $type . ';name:'. $basename .';base64:' . base64_encode($data);
         return $base64;
     }
 

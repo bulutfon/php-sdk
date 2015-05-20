@@ -7,6 +7,7 @@ require_once '../helpers/functions.php';
 $token = getAccessTokenFromSession();
 $extensions = $provider->getExtensions($token);
 
+
 ?>
 <html>
 <head>
@@ -14,6 +15,8 @@ $extensions = $provider->getExtensions($token);
 </head>
 <body>
     <h2>Extensions</h2>
+
+    <a href="form.php">Create New</a>
     <table>
         <thead>
             <tr style="text-align: center">
@@ -34,6 +37,8 @@ $extensions = $provider->getExtensions($token);
                     <td><?= $extension->caller_name; ?></td>
                     <td><?= $extension->email; ?></td>
                     <td><a href="extension.php?id=<?= $extension->id; ?>">Detail</a></td>
+                    <td><a href="form.php?id=<?= $extension->id; ?>">Update</a></td>
+                    <td><a href="delete.php?id=<?= $extension->id; ?>">Delete</a></td>
                 </tr>
             <?php } ?>
         </tbody>
