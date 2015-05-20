@@ -160,5 +160,6 @@ Bunun için;
 ```
 
 methodlarını kullanabilirsiniz.
+
 Örnek kullanımları görmek için ve erişebileceğiniz değişkenler için [örnek uygulamamızı](https://github.com/bulutfon/php-sdk/tree/master/examples) inceleyebilirsiniz.
     
