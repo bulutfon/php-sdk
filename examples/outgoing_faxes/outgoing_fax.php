@@ -4,7 +4,7 @@ require '../../vendor/autoload.php';
 require_once '../helpers/variables.php';
 require_once '../helpers/functions.php';
 
-$token = getAccessTokenFromSession();
+$token = getAccessTokenFromSession($provider);
 
 if(isset($_GET['id'])) {
     $id = $_GET['id'];

@@ -17,10 +17,10 @@ class IncomingFax extends BaseEntity {
     public function getArrayCopy()
     {
         return [
-            'id' => $this->$uuid,
-            'number' => $this->$sender,
-            'state' => $this->$receiver,
-            'destination_type' => $this->$created_at
+            'id' => $this->uuid,
+            'number' => $this->sender,
+            'state' => $this->receiver,
+            'destination_type' => $this->created_at
         ];
     }
 }

@@ -7,7 +7,7 @@ require_once './helpers/functions.php';
 if (!isset($_GET['code'])) {
 
     if(isset($_GET['refresh_token'])) {
-        $token = getAccessTokenFromSession();
+        $token = getAccessTokenFromSession($provider);
         $refreshToken =  $token->refreshToken;
         $url = $_GET['back'];
         $token = $provider->getAccessToken('refresh_token', ['refresh_token' => $refreshToken]);

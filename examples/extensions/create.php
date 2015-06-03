@@ -4,7 +4,7 @@ require '../../vendor/autoload.php';
 require_once '../helpers/variables.php';
 require_once '../helpers/functions.php';
 
-$token = getAccessTokenFromSession();
+$token = getAccessTokenFromSession($provider);
 
 $params = array(
     'full_name' => $_POST['full_name'], #required

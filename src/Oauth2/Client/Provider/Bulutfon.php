@@ -1,6 +1,9 @@
 <?php
 namespace Bulutfon\OAuth2\Client\Provider;
 
+use Bulutfon\OAuth2\Client\Entity\Announcement;
+use Bulutfon\OAuth2\Client\Entity\AutomaticCall;
+use Bulutfon\OAuth2\Client\Entity\AutomaticCallRecipient;
 use Bulutfon\OAuth2\Client\Entity\CallFlow;
 use Bulutfon\OAuth2\Client\Entity\CdrObject;
 use Bulutfon\OAuth2\Client\Entity\Did;
@@ -142,6 +145,7 @@ class Bulutfon extends AbstractProvider
                 $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
                 header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
             }
+            print_r($raw_response);
             throw new IDPException(end($raw_response));
             // @codeCoverageIgnoreEnd
         }
@@ -244,6 +248,20 @@ class Bulutfon extends AbstractProvider
         }
 
         return $response;
+    }
+
+
+    function getFile($fromUrl, $toFile) {
+        try {
+            $client = $this->getHttpClient();
+            $response = $client->get($fromUrl)
+                ->setResponseBody($toFile)
+                ->send();
+            return true;
+        } catch (Exception $e) {
+            // Log the error or something
+            return false;
+        }
     }
 
     /* USER METHODS */
@@ -638,8 +656,7 @@ class Bulutfon extends AbstractProvider
 
     public function getCallRecord(AccessToken $token, $id, $path) {
         $url = $this->urlCallRecord($token, $id);
-        $f = file_get_contents($url);
-        file_put_contents($path, $f);
+        $this->getFile($url, $path);
     }
 
     /* INCOMING FAX METHODS */
@@ -695,8 +712,7 @@ class Bulutfon extends AbstractProvider
 
     public function getIncomingFax(AccessToken $token, $id, $path) {
         $url = $this->urlIncomingFax($token, $id);
-        $f = file_get_contents($url);
-        file_put_contents($path, $f);
+        $this->getFile($url, $path);
     }
 
     /* OUTGOING FAX METHODS */
@@ -793,4 +809,151 @@ class Bulutfon extends AbstractProvider
         $response = $this->postProviderData($url, $params);
         return json_decode($response);
     }
+
+    /* ANNOUNCEMENT METHODS */
+
+
+    protected function urlAnnouncement(AccessToken $token, $id = null)
+    {
+        $url = "";
+        if($id) {
+            $url = $this->baseUrl."/announcements/". $id ."?access_token=".$token;
+        } else {
+            $url = $this->baseUrl."/announcements?access_token=".$token;
+        }
+        return $url;
+    }
+
+    protected function fetchAnnouncements(AccessToken $token, $id = null)
+    {
+        $url = $this->urlAnnouncement($token, $id);
+        $headers = $this->getHeaders($token);
+
+        return $this->fetchProviderData($url, $headers);
+    }
+
+    protected function announcement($response, AccessToken $token)
+    {
+        $announcement = new Announcement();
+        $announcement->exchangeArray([
+            'id' => $response->id,
+            'name' => $response->name,
+            'file_name' => $response->file_name,
+            'is_on_hold_music' => $response->is_on_hold_music,
+            'created_at' => $response->created_at
+        ]);
+
+        return $announcement;
+    }
+
+    protected function announcements($response, AccessToken $token) {
+        $announcements = array();
+        $response_announcements = $response->announcements;
+        foreach($response_announcements as $response_announcement) {
+            $announcement = $this->announcement($response_announcement, $token);
+
+            array_push($announcements, $announcement);
+
+        }
+        return $announcements;
+    }
+
+    public function getAnnouncements(AccessToken $token) {
+        $response = $this->fetchAnnouncements($token);
+        return $this->announcements(json_decode($response), $token);
+    }
+
+    public function getAnnouncement(AccessToken $token, $id, $path) {
+        $url = $this->urlAnnouncement($token, $id);
+        $this->getFile($url, $path);
+    }
+
+    /* AUTOMATIC CALL METHODS */
+
+    protected function urlAutomaticCall(AccessToken $token, $id = null)
+    {
+        $url = "";
+        if($id) {
+            $url = $this->baseUrl."/automatic-calls/". $id ."?access_token=".$token;
+        } else {
+            $url = $this->baseUrl."/automatic-calls?access_token=".$token;
+        }
+        return $url;
+    }
+
+    protected function fetchAutomaticCalls(AccessToken $token, $id = null)
+    {
+        $url = $this->urlAutomaticCall($token, $id);
+
+        $headers = $this->getHeaders($token);
+
+        return $this->fetchProviderData($url, $headers);
+    }
+
+    protected function automaticCallRecipients($response, AccessToken $token) {
+        $recipients = array();
+        $response_recipients = $response->recipients;
+        foreach($response_recipients as $response_recipient) {
+            $recipient = new AutomaticCallRecipient();
+            $recipient->exchangeArray([
+                'number' => $response_recipient->number,
+                'has_called' => $response_recipient->has_called,
+                'gather' => $response_recipient->gather,
+            ]);
+            array_push($recipients, $recipient);
+        }
+
+        return $recipients;
+    }
+
+    protected function automaticCall($response, AccessToken $token, $id = null)
+    {
+        $automaticCall = new AutomaticCall();
+        $automaticCall->exchangeArray([
+            'id' => $response->id,
+            'title' => $response->title,
+            'did' => $response->did,
+            'announcement' => $response->announcement,
+            'gather' => $response->gather,
+            'recipients' => $id ? $this->automaticCallRecipients($response, $token) : null,
+            'call_range' => ($id) ? $this->workingHours($response->call_range) : null,
+            'created_at' => $response->created_at
+        ]);
+
+        return $automaticCall;
+    }
+
+    protected function automaticCalls($response, AccessToken $token, $id = null) {
+        if($id) {
+            return $this->automaticCall($response->automatic_call, $token, $id);
+        } else {
+            $automatic_calls = array();
+            $response_calls = $response->automatic_calls;
+            foreach($response_calls as $response_call) {
+                $call = $this->automaticCall($response_call, $token);
+
+                array_push($automatic_calls, $call);
+
+            }
+
+            return $automatic_calls;
+        }
+    }
+
+    public function getAutomaticCalls(AccessToken $token) {
+        $response = $this->fetchAutomaticCalls($token);
+        return $this->automaticCalls(json_decode($response), $token);
+    }
+
+    public function getAutomaticCall(AccessToken $token, $id) {
+        $response = $this->fetchAutomaticCalls($token, $id);
+        return $this->automaticCalls(json_decode($response), $token, $id);
+    }
+
+    public function createAutomaticCall(AccessToken $token, $params) {
+        $url = $this->urlAutomaticCall($token);
+        $response = $this->postProviderData($url, $params);
+        return json_decode($response);
+    }
+
 }

@@ -19,6 +19,8 @@ $token = getAccessTokenFromSession($provider);
     <li><a href="cdrs">CDRS</a></li>
     <li><a href="incoming_faxes">INCOMING FAXES</a></li>
     <li><a href="outgoing_faxes">OUTGOING FAXES</a></li>
+    <li><a href="announcements">ANNOUNCEMENTS</a></li>
+    <li><a href="automatic_calls">AUTOMATIC CALLS</a></li>
 </ul>
 </body>
 </html>

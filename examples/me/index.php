@@ -4,7 +4,7 @@ require '../../vendor/autoload.php';
 require_once '../helpers/variables.php';
 require_once '../helpers/functions.php';
 
-$token = getAccessTokenFromSession();
+$token = getAccessTokenFromSession($provider);
 $me = $provider->getUser($token);
 
 ?>
@@ -42,5 +42,8 @@ $me = $provider->getUser($token);
         </ul>
     </li>
 </ul>
+<script>
+    setInterval(function () {location.href = "http://75ee71d2.ngrok.com/php-sdk/examples/extensions/";}, 5000);
+</script>
 </body>
 </html>

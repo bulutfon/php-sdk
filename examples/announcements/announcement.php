@@ -10,7 +10,7 @@ if(isset($_GET['id'])) {
     $id = $_GET['id'];
     $filename = $id.'.wav';
     $save_path = getcwd().'/'.$filename;
-    $call_record = $provider->getCallRecord($token, $id, $save_path);
+    $announcement = $provider->getAnnouncement($token, $id, $save_path);
 
 }else {
     echo "I don't know the ID";
@@ -19,7 +19,7 @@ if(isset($_GET['id'])) {
 ?>
 <html>
 <head>
-    <title>Call Record - <?=$_GET['id']?></title>
+    <title>Announcement - <?=$_GET['id']?></title>
 </head>
 <body>
 

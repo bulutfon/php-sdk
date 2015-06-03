@@ -160,6 +160,42 @@ Bunun için;
 ```
 
 methodlarını kullanabilirsiniz.
+    
+### Ses Dosyalarını listeleme ve indirme
+
+Bunun için;
+
+```php
+	$provider->getAnnouncements($token); // Ses Dosyalarını listeler
+	$provider->getAnnouncement($token, $id, $path); // Ses Dosyasını verilen pathe kaydeder 
+```
+
+methodlarını kullanabilirsiniz.
+
+### Otomatik Aramaları listeleme ve oluşturma
+
+Bunun için;
+
+```php
+	$provider->getAutomaticCalls($token); // Daha önce yapılmış otomatik aramaları listeler
+	$provider->getAutomaticCall($token, $id); // Otomatik arama detaylarını görüntüler 
+	# Yeni otomatik arama oluşturmak için
+    $arr = array('title' => 'API ARAMA TEST', 'receivers' => '90850885xxxx,90850885yyyy',
+        'did' => "90850885xxxx", 'gather' => true, 'announcement_id' => 'yyy',
+
+        // Tarih ve saatler opsiyonel varsayılan olarak aktif => true start => 09:00 finish => 18:00 olacaktır
+        'mon_active' => true, 'mon_start' => '12:15', 'mon_finish' => '12:15',
+        'tue_active' => true, 'tue_start' => '12:15', 'tue_finish' => '12:15',
+        'wed_active' => true, 'wed_start' => '12:15', 'wed_finish' => '12:15',
+        'fri_active' => true, 'fri_start' => '12:15', 'fri_finish' => '12:15',
+        'thu_active' => true, 'thu_start' => '12:15', 'thu_finish' => '12:15',
+        'sat_active' => true, 'sat_start' => '12:15', 'sat_finish' => '12:15',
+        'sun_active' => true, 'sun_start' => '12:15', 'sun_finish' => '12:15'
+    );
+    $provider->createAutomaticCall($token, $arr);
+```
+
+methodlarını kullanabilirsiniz.
 
 Örnek kullanımları görmek için ve erişebileceğiniz değişkenler için [örnek uygulamamızı](https://github.com/bulutfon/php-sdk/tree/master/examples) inceleyebilirsiniz.
     

@@ -8,15 +8,17 @@
 
 namespace Bulutfon\OAuth2\Client\Entity;
 
-class OutgoingFaxRecipient extends BaseEntity {
+class AutomaticCallRecipient extends BaseEntity {
     protected $number;
-    protected $state;
+    protected $has_called;
+    protected $gather;
 
     public function getArrayCopy()
     {
         return [
             'number' => $this->number,
-            'state' => $this->state
+            'has_called' => $this->has_called,
+            'gather' => $this->gather
         ];
     }
 }
