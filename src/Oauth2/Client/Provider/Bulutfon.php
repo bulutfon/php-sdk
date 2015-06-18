@@ -10,6 +10,9 @@ use Bulutfon\OAuth2\Client\Entity\Did;
 use Bulutfon\OAuth2\Client\Entity\Extension;
 use Bulutfon\OAuth2\Client\Entity\Group;
 use Bulutfon\OAuth2\Client\Entity\IncomingFax;
+use Bulutfon\OAuth2\Client\Entity\Message;
+use Bulutfon\OAuth2\Client\Entity\MessageRecipient;
+use Bulutfon\OAuth2\Client\Entity\MessageTitle;
 use Bulutfon\OAuth2\Client\Entity\Origination;
 use Bulutfon\OAuth2\Client\Entity\OutgoingFax;
 use Bulutfon\OAuth2\Client\Entity\OutgoingFaxRecipient;
@@ -145,7 +148,6 @@ class Bulutfon extends AbstractProvider
                 $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
                 header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
             }
-            print_r($raw_response);
             throw new IDPException(end($raw_response));
             // @codeCoverageIgnoreEnd
         }
@@ -179,7 +181,6 @@ class Bulutfon extends AbstractProvider
                 $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
                 header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
             }
-            print_r($raw_response);
             throw new IDPException(end($raw_response));
             // @codeCoverageIgnoreEnd
         }
@@ -213,7 +214,6 @@ class Bulutfon extends AbstractProvider
                 $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
                 header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
             }
-            print_r($raw_response);
             throw new IDPException(end($raw_response));
             // @codeCoverageIgnoreEnd
         }
@@ -242,7 +242,6 @@ class Bulutfon extends AbstractProvider
                 $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
                 header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
             }
-            print_r($raw_response);
             throw new IDPException(end($raw_response));
             // @codeCoverageIgnoreEnd
         }
@@ -956,4 +955,136 @@ class Bulutfon extends AbstractProvider
         return json_decode($response);
     }
 
+    /* Message TITLE METHODS */
+
+
+    protected function urlMessageTitle(AccessToken $token)
+    {
+        $url = $this->baseUrl."/message-titles?access_token=".$token;
+        return $url;
+    }
+
+    protected function fetchMessageTitles(AccessToken $token)
+    {
+        $url = $this->urlMessageTitle($token);
+        $headers = $this->getHeaders($token);
+
+        return $this->fetchProviderData($url, $headers);
+    }
+
+    protected function messageTitle($response, AccessToken $token)
+    {
+        $messageTitle = new MessageTitle();
+        $messageTitle->exchangeArray([
+            'id' => $response->id,
+            'name' => $response->name,
+            'state' => $response->state
+        ]);
+
+        return $messageTitle;
+    }
+
+    protected function messageTitles($response, AccessToken $token) {
+        $messageTitles = array();
+        $response_messageTitles = $response->message_titles;
+        foreach($response_messageTitles as $response_messageTitle) {
+            $messageTitle = $this->messageTitle($response_messageTitle, $token);
+
+            array_push($messageTitles, $messageTitle);
+
+        }
+        return $messageTitles;
+    }
+
+    public function getMessageTitles(AccessToken $token) {
+        $response = $this->fetchMessageTitles($token);
+        return $this->messageTitles(json_decode($response), $token);
+    }
+
+    /* MESSAGE METHODS */
+
+    protected function urlMessage(AccessToken $token, $id = null)
+    {
+        $url = "";
+        if($id) {
+            $url = $this->baseUrl."/messages/". $id ."?access_token=".$token;
+        } else {
+            $url = $this->baseUrl."/messages?access_token=".$token;
+        }
+        return $url;
+    }
+
+    protected function fetchMessages(AccessToken $token, $id = null)
+    {
+        $url = $this->urlMessage($token, $id);
+
+        $headers = $this->getHeaders($token);
+
+        return $this->fetchProviderData($url, $headers);
+    }
+
+    protected function messageRecipient($response, AccessToken $token) {
+        $recipients = array();
+        $response_recipients = $response->recipients;
+        foreach($response_recipients as $response_recipient) {
+            $recipient = new MessageRecipient();
+            $recipient->exchangeArray([
+                'number' => $response_recipient->number,
+                'state' => $response_recipient->state,
+            ]);
+            array_push($recipients, $recipient);
+        }
+
+        return $recipients;
+    }
+
+    protected function message($response, AccessToken $token, $id = null)
+    {
+        $message = new Message();
+        $message->exchangeArray([
+            'id' => $response->id,
+            'title' => $response->title,
+            'content' => $response->content,
+            'sent_as_single_sms' => $response->sent_as_single_sms,
+            'is_planned_sms' => $id ?  $response->is_planned_sms : null,
+            'send_date' => $id ?  $response->send_date : null,
+            'recipients' => $id ?  $this->messageRecipient($response, $token) : null,
+            'created_at' => $response->created_at
+        ]);
+
+        return $message;
+    }
+
+    protected function messages($response, AccessToken $token, $id = null) {
+        if($id) {
+            return $this->message($response->message, $token, $id);
+        } else {
+            $messages = array();
+            $response_messages = $response->messages;
+            foreach($response_messages as $response_message) {
+                $message = $this->message($response_message, $token);
+
+                array_push($messages, $message);
+
+            }
+
+            return $messages;
+        }
+    }
+
+    public function getMessages(AccessToken $token) {
+        $response = $this->fetchMessages($token);
+        return $this->messages(json_decode($response), $token);
+    }
+
+    public function getMessage(AccessToken $token, $id) {
+        $response = $this->fetchMessages($token, $id);
+        return $this->messages(json_decode($response), $token, $id);
+    }
+
+    public function sendMessage(AccessToken $token, $params) {
+        $url = $this->urlMessage($token);
+        $response = $this->postProviderData($url, $params);
+        return json_decode($response);
+    }
 }

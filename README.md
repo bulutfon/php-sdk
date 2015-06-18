@@ -197,5 +197,36 @@ Bunun için;
 
 methodlarını kullanabilirsiniz.
 
+### Sms Başlıklarını Listeleme
+
+Bunun için;
+
+```php
+	$provider->getMessageTitles($token); // Panelden oluşturduğunuz sms başlıklarını listeler
+```
+
+methodlarını kullanabilirsiniz.
+
+### Sms'leri Listeleme ve Smsm Gönderme
+
+Bunun için;
+
+```php
+	$provider->getMessages($token); // Gönderilen mesajları listeler
+	$provider->getMessage($token, $id); // Gönderilen mesaj detaylarını görüntüler 
+	# Yeni mesaj göndermek için
+    $arr = array(
+        'title' => 'TEST',
+        'content' => 'Test Message',
+        'receivers' => "905xxxxxxxxx,905xxxxxxxxx",
+        'is_single_sms' => true, # OPSIYONEL, VARSAYILAN false
+        'is_future_sms' => true, # OPSIYONEL, VARSAYILAN false
+        'send_date' => '21/06/2015 20:22' # OPTIONAL (Eğer is_future_sms true olarak setlendiyse zorunlu)
+    );
+    $resp = $provider->sendMessage($token, $arr);
+```
+
+methodlarını kullanabilirsiniz.
+
 Örnek kullanımları görmek için ve erişebileceğiniz değişkenler için [örnek uygulamamızı](https://github.com/bulutfon/php-sdk/tree/master/examples) inceleyebilirsiniz.
     

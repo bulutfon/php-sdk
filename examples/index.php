@@ -21,6 +21,8 @@ $token = getAccessTokenFromSession($provider);
     <li><a href="outgoing_faxes">OUTGOING FAXES</a></li>
     <li><a href="announcements">ANNOUNCEMENTS</a></li>
     <li><a href="automatic_calls">AUTOMATIC CALLS</a></li>
+    <li><a href="message_titles">MESSAGE TITLES</a></li>
+    <li><a href="messages">MESSAGES</a></li>
 </ul>
 </body>
 </html>
