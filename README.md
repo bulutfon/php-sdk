@@ -207,7 +207,7 @@ Bunun için;
 
 methodlarını kullanabilirsiniz.
 
-### Sms'leri Listeleme ve Smsm Gönderme
+### Mesajları Listeleme ve Mesaj Gönderme
 
 Bunun için;
 
