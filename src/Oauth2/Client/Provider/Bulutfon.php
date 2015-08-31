@@ -147,8 +147,9 @@ class Bulutfon extends AbstractProvider
             if($response && $response->error == 'Token expired') {
                 $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
                 header("Location: ". $this->redirectUri ."?refresh_token=true&back=".$actual_link);
+            } else {
+                throw new IDPException(end($raw_response));
             }
-            throw new IDPException(end($raw_response));
             // @codeCoverageIgnoreEnd
         }
 
