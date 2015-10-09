@@ -16,6 +16,7 @@ use Bulutfon\OAuth2\Client\Entity\MessageTitle;
 use Bulutfon\OAuth2\Client\Entity\Origination;
 use Bulutfon\OAuth2\Client\Entity\OutgoingFax;
 use Bulutfon\OAuth2\Client\Entity\OutgoingFaxRecipient;
+use Bulutfon\OAuth2\Client\Entity\TokenInfo;
 use Bulutfon\OAuth2\Client\Entity\User;
 use Bulutfon\OAuth2\Client\Entity\Cdr;
 use Bulutfon\OAuth2\Client\Entity\WorkingHour;
@@ -1087,5 +1088,40 @@ class Bulutfon extends AbstractProvider
         $url = $this->urlMessage($token);
         $response = $this->postProviderData($url, $params);
         return json_decode($response);
+    }
+
+    /* API INFO METHODS */
+
+    protected function tokenInfoUrl(AccessToken $token)
+    {
+        $url = "";
+        $url = $this->baseUrl."/token-info/".$token;
+        return $url;
+    }
+
+    protected function fetchTokenInfo(AccessToken $token)
+    {
+        $url = $this->tokenInfoUrl($token);
+
+        $headers = $this->getHeaders($token);
+
+        return $this->fetchProviderData($url, $headers);
+    }
+
+    protected function tokenInfo($response, AccessToken $token)
+    {
+        $token_info = new TokenInfo();
+        $token_info->exchangeArray([
+            'token' => $response->token,
+            'expired' => property_exists($response, "expired") ? $response->expired : null,
+            'expires_in' => property_exists($response, "expires_in") ? $response->expires_in : null,
+        ]);
+
+        return $token_info;
+    }
+
+    public function getTokenInfo(AccessToken $token) {
+        $response = $this->fetchTokenInfo($token);
+        return $this->tokenInfo(json_decode($response), $token);
     }
 }

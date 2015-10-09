@@ -23,6 +23,7 @@ $token = getAccessTokenFromSession($provider);
     <li><a href="automatic_calls">AUTOMATIC CALLS</a></li>
     <li><a href="message_titles">MESSAGE TITLES</a></li>
     <li><a href="messages">MESSAGES</a></li>
+    <li><a href="token_info">TOKEN INFO</a></li>
 </ul>
 </body>
 </html>
