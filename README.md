@@ -7,6 +7,34 @@ Bulutfon API'ye erişmek için [Php oauth2-client](https://github.com/thephpleag
 
 ## Kullanım
 
+### Master Token ile
+
+Sdk'yı composer.json dosyanızın içerisine.
+
+	require: "bulutfon/php-sdk"
+	
+komutunu ekledikten sonra,
+
+	composer install
+
+komutunu koşarak projenize dahil ettikten sonra kullanmaya başlayabilirsiniz.
+
+```php
+	$provider = new \Bulutfon\OAuth2\Client\Provider\Bulutfon([
+    	'verifySSL        => false (Varsayılan olarak true'dur eğer ssl doğrulaması istenmiyorsa eklenmelidir.
+	]); 
+```
+
+Şeklinde provider'ınızı tanımladıktan sonra, master token ile bir token objesi oluşturmak gerekmektedir. Bunu da
+
+```php
+    $token = new \League\OAuth2\Client\Token\AccessToken(['access_token' => "xxxxxx"]);
+```
+
+şeklinde oluşturabilir, ardından oluşturulan provider ve token nesneleri ile api erişimi sağlayabilirsiniz.
+
+### OAUTH2 ile
+
 Sdk'yı composer.json dosyanızın içerisine.
 
 	require: "bulutfon/php-sdk"
@@ -227,6 +255,16 @@ Bunun için;
 ```
 
 methodlarını kullanabilirsiniz.
+
+### Token Bilgisi Alma
+
+Bunun için;
+
+```php
+	$provider->getTokenInfo($token);
+```
+
+methodunu kullanabilirsiniz
 
 Örnek kullanımları görmek için ve erişebileceğiniz değişkenler için [örnek uygulamamızı](https://github.com/bulutfon/php-sdk/tree/master/examples) inceleyebilirsiniz.
     

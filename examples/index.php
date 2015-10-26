@@ -5,6 +5,8 @@ require_once './helpers/variables.php';
 require_once './helpers/functions.php';
 
 $token = getAccessTokenFromSession($provider);
+
+// $token = new \League\OAuth2\Client\Token\AccessToken(['access_token' => "xxxx"]); # Master Token
 ?>
 <html>
 <head>
