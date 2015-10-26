@@ -1,7 +1,7 @@
 {
   "name": "bulutfon/php-sdk",
   "description": "Bulutfon sdk for Bulutfon-Api",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "keywords": [
     "oauth",
     "package",
