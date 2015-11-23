@@ -2,7 +2,7 @@
 
 Bulutfon API'ye erişmek için [Php oauth2-client](https://github.com/thephpleague/oauth2-client) provider'ı. 
 
-* [Dökümantasyon](https://github.com/bulutfon/documents/tree/master/API)
+* [Dokümantasyon](https://github.com/bulutfon/documents/tree/master/API)
 * [Örnek Uygulama](https://github.com/bulutfon/php-sdk/tree/master/examples)
 
 ## Kullanım
@@ -155,7 +155,7 @@ Bunun için;
 
 methodlarını kullanabilirsiniz.
 
-burada `$params` değişkeni array olup, filtreleme yapmak isterseniz kullanacağınız filtreleri buraya ekleyebilirsiniz. Filtrelerin detayını [dökümantasyondan](https://github.com/bulutfon/documents/blob/master/API/endpoints/cdr.md#filtreler) öğrenebilirsiniz.
+burada `$params` değişkeni array olup, filtreleme yapmak isterseniz kullanacağınız filtreleri buraya ekleyebilirsiniz. Filtrelerin detayını [dokümantasyondan](https://github.com/bulutfon/documents/blob/master/API/endpoints/cdr.md#filtreler) öğrenebilirsiniz.
 
 `$page` değişkeni ise erişmek istediğiniz sayfayı belirtir.
 
