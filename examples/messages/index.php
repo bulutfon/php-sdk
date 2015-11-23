@@ -5,6 +5,7 @@ require_once '../helpers/variables.php';
 require_once '../helpers/functions.php';
 
 $token = getAccessTokenFromSession($provider);
+
 $messages = $provider->getMessages($token);
 
 ?>
@@ -20,6 +21,7 @@ $messages = $provider->getMessages($token);
         <th>ID</td>
         <th>Title</td>
         <th>Content</td>
+        <th>Recipients</td>
         <th>Sent as Single Sms</td>
         <th>Created At</td>
         <th></td>
@@ -31,6 +33,7 @@ $messages = $provider->getMessages($token);
             <td><?= $message->id; ?></td>
             <td><?= $message->title; ?></td>
             <td><?= $message->content; ?></td>
+            <td><?= $message->recipients; ?></td>
             <td><?= $message->sent_as_single_sms ? "TRUE" : "FALSE"; ?></td>
             <td><?= $message->created_at; ?></td>
             <td><a href="message.php?id=<?= $message->id; ?>">Detail</a></td>

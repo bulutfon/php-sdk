@@ -241,6 +241,8 @@ Bunun için;
 
 ```php
 	$provider->getMessages($token); // Gönderilen mesajları listeler
+	$parameters = array("limit" => n, "page" => m); // m. sayfadaki n mesajı görüntüler.
+	$provider->getMessages($token, $parameters); // Verilen parametrelere göre Gönderilen mesajları listeler
 	$provider->getMessage($token, $id); // Gönderilen mesaj detaylarını görüntüler 
 	# Yeni mesaj göndermek için
     $arr = array(

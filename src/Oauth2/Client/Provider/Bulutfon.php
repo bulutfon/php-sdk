@@ -1005,20 +1005,24 @@ class Bulutfon extends AbstractProvider
 
     /* MESSAGE METHODS */
 
-    protected function urlMessage(AccessToken $token, $id = null)
+    protected function urlMessage(AccessToken $token, $id = null, $params = [])
     {
         $url = "";
+        $params['access_token'] = $token->accessToken;
+        $par = http_build_query($params);
+
         if($id) {
             $url = $this->baseUrl."/messages/". $id ."?access_token=".$token;
         } else {
-            $url = $this->baseUrl."/messages?access_token=".$token;
+            $url = $this->baseUrl."/messages?" . $par;
         }
+
         return $url;
     }
 
-    protected function fetchMessages(AccessToken $token, $id = null)
+    protected function fetchMessages(AccessToken $token, $id = null, $params = [])
     {
-        $url = $this->urlMessage($token, $id);
+        $url = $this->urlMessage($token, $id, $params);
 
         $headers = $this->getHeaders($token);
 
@@ -1051,6 +1055,7 @@ class Bulutfon extends AbstractProvider
             'is_planned_sms' => $id ?  $response->is_planned_sms : null,
             'send_date' => $id ?  $response->send_date : null,
             'recipients' => $id ?  $this->messageRecipient($response, $token) : null,
+            'recipients' => property_exists($response, 'recipients') ? $response->recipients : null,
             'created_at' => $response->created_at
         ]);
 
@@ -1074,8 +1079,8 @@ class Bulutfon extends AbstractProvider
         }
     }
 
-    public function getMessages(AccessToken $token) {
-        $response = $this->fetchMessages($token);
+    public function getMessages(AccessToken $token, $params = []) {
+        $response = $this->fetchMessages($token, null, $params);
         return $this->messages(json_decode($response), $token);
     }
 
