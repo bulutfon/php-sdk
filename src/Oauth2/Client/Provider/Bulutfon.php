@@ -840,7 +840,6 @@ class Bulutfon extends AbstractProvider
             'id' => $response->id,
             'name' => $response->name,
             'file_name' => $response->file_name,
-            'is_on_hold_music' => $response->is_on_hold_music,
             'created_at' => $response->created_at
         ]);
 
@@ -868,6 +867,29 @@ class Bulutfon extends AbstractProvider
         $url = $this->urlAnnouncement($token, $id);
         $this->getFile($url, $path);
     }
+
+    public function prepareAnnouncementAttachment($path) {
+        $type = mime_content_type($path);
+        $basename = basename($path);
+        $data = file_get_contents($path);
+        $base64 = 'data:'. $type . ';name:'. $basename .';base64:' . base64_encode($data);
+        return $base64;
+    }
+
+    public function createAnnouncement(AccessToken $token, $params = []) {
+        $url = $this->urlAnnouncement($token);
+        $f_path = $params['announcement'];
+        $params['announcement'] = $this->prepareAnnouncementAttachment($f_path);
+        $response = $this->postProviderData($url, $params);
+        return json_decode($response);
+    }
+
+    public function deleteAnnouncement(AccessToken $token, $id) {
+        $url = $this->urlAnnouncement($token, $id);
+        $response = $this->deleteProviderData($url);
+        return json_decode($response);
+    }
+
 
     /* AUTOMATIC CALL METHODS */
 

@@ -6,7 +6,6 @@ require_once '../helpers/functions.php';
 
 $token = getAccessTokenFromSession($provider);
 $announcements = $provider->getAnnouncements($token);
-
 ?>
 <html>
 <head>
@@ -33,7 +32,8 @@ $announcements = $provider->getAnnouncements($token);
                     <td><?= $announcement->file_name; ?></td>
                     <td><?= $announcement->is_on_hold_music; ?></td>
                     <td><?= $announcement->created_at; ?></td>
-                    <td><a href="announcement.php?id=<?= $announcement->id; ?>">Download</a></td>
+                    <td><a href="announcement.php?id=<?= $announcement->id; ?>">Download</a>
+                        <a href="delete.php?id=<?= $announcement->id; ?>">Delete</a></td>
                 </tr>
             <?php } ?>
         </tbody>

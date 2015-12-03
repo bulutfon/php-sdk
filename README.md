@@ -189,13 +189,19 @@ Bunun için;
 
 methodlarını kullanabilirsiniz.
     
-### Ses Dosyalarını listeleme ve indirme
+### Ses Dosyalarını listeleme ve indirme, oluşturma ve silme
 
 Bunun için;
 
 ```php
 	$provider->getAnnouncements($token); // Ses Dosyalarını listeler
-	$provider->getAnnouncement($token, $id, $path); // Ses Dosyasını verilen pathe kaydeder 
+	$provider->getAnnouncement($token, $id, $path); // Ses Dosyasını verilen pathe kaydeder
+	/* Ses Dosyası oluşturma */
+	$file_path = getcwd().'/test.wav';
+    $arr = array('name' => 'API TEST', 'announcement' => $file_path);
+    $provider->createAnnouncement($token, $arr);
+	/* Ses Dosyası silme */
+	$provider->deleteAnnouncement($token, $id);
 ```
 
 methodlarını kullanabilirsiniz.
