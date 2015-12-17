@@ -148,7 +148,7 @@ Bunun için;
 	$provider->getCdrs($token, $params, $page); // Cdr listesine erişir
 	$provider->getCdr($token, $uid) // Uid'si verilen cdr detayını döndürür
 	# Arama kaydını indirmek için
-	$filename = $id.'.wav';
+	$filename = $id.'.ogg';
     $save_path = getcwd().'/'.$filename;
     $call_record = $provider->getCallRecord($token, $id, $save_path); # $save_path değişkeni ile verilen pathe ses kaydını kaydeder. (Dosya yazma izinlerinin doğru ayarlandığına emin olunuz.)
 ```
