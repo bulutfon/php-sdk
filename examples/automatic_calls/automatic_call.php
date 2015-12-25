@@ -33,7 +33,7 @@ if(isset($_GET['id'])) {
         <ul>
             <?php $recipients =  $automatic_call->recipients;
             foreach($recipients as $recipient) { ?>
-                <li><?= $recipient->number . " - " . ($recipient->has_called ? "TRUE" : "FALSE") . " - " . $recipient->gather ?></li>
+                <li><?= $recipient->uuid . " - " . $recipient->number . " - " . ($recipient->has_called ? "TRUE" : "FALSE") . " - " . $recipient->gather ?></li>
             <?php } ?>
         </ul>
     </li>

@@ -744,6 +744,7 @@ class Bulutfon extends AbstractProvider
         foreach($response_recipients as $response_recipient) {
             $recipient = new OutgoingFaxRecipient();
             $recipient->exchangeArray([
+                'uuid' => $response_recipient->uuid,
                 'number' => $response_recipient->number,
                 'state' => $response_recipient->state,
             ]);
@@ -919,6 +920,7 @@ class Bulutfon extends AbstractProvider
         foreach($response_recipients as $response_recipient) {
             $recipient = new AutomaticCallRecipient();
             $recipient->exchangeArray([
+                'uuid' => $response_recipient->uuid,
                 'number' => $response_recipient->number,
                 'has_called' => $response_recipient->has_called,
                 'gather' => $response_recipient->gather,

@@ -9,6 +9,7 @@
 namespace Bulutfon\OAuth2\Client\Entity;
 
 class AutomaticCallRecipient extends BaseEntity {
+    protected $uuid;
     protected $number;
     protected $has_called;
     protected $gather;
@@ -16,6 +17,7 @@ class AutomaticCallRecipient extends BaseEntity {
     public function getArrayCopy()
     {
         return [
+            'uuid' => $this->uuid,
             'number' => $this->number,
             'has_called' => $this->has_called,
             'gather' => $this->gather

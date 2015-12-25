@@ -32,7 +32,7 @@ if(isset($_GET['id'])) {
         <ul>
             <?php $recipients =  $outgoing_fax->recipients;
             foreach($recipients as $recipient) { ?>
-                <li><?= $recipient->number . " - " . $recipient->state ?></li>
+                <li><?= $recipient->uuid . " - " . $recipient->number . " - " . $recipient->state ?></li>
             <?php } ?>
         </ul>
     </li>
