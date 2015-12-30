@@ -151,6 +151,7 @@ Bunun için;
 	$filename = $id.'.wav';
     $save_path = getcwd().'/'.$filename;
     $call_record = $provider->getCallRecord($token, $id, $save_path); # $save_path değişkeni ile verilen pathe ses kaydını kaydeder. (Dosya yazma izinlerinin doğru ayarlandığına emin olunuz.)
+    $provider->getCallRecordStreamUrl($token, $id); // Ses Kaydını stream etmek için gerekli url i döndürür
 ```
 
 methodlarını kullanabilirsiniz.
@@ -196,6 +197,7 @@ Bunun için;
 ```php
 	$provider->getAnnouncements($token); // Ses Dosyalarını listeler
 	$provider->getAnnouncement($token, $id, $path); // Ses Dosyasını verilen pathe kaydeder
+	$provider->getAnnouncementStreamUrl($token, $id); // Ses Dosyasını stream etmek için gerekli url i döndürür
 	/* Ses Dosyası oluşturma */
 	$file_path = getcwd().'/test.wav';
     $arr = array('name' => 'API TEST', 'announcement' => $file_path);

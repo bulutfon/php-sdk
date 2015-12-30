@@ -649,15 +649,25 @@ class Bulutfon extends AbstractProvider
 
     /* CALL RECORD METHODS */
 
-    protected function urlCallRecord(AccessToken $token, $id = null)
+    protected function urlCallRecord(AccessToken $token, $id = null, $is_stream = false)
     {
-        $url = $this->baseUrl."/call-records/". $id ."?access_token=".$token;
+        if($is_stream) {
+            $url = $this->baseUrl."/call-records/". $id ."/stream?access_token=".$token;
+        }
+        else {
+            $url = $this->baseUrl."/call-records/". $id ."?access_token=".$token;
+        }
         return $url;
     }
 
     public function getCallRecord(AccessToken $token, $id, $path) {
         $url = $this->urlCallRecord($token, $id);
         $this->getFile($url, $path);
+    }
+
+    public function getCallRecordStreamUrl(AccessToken $token, $id) {
+        $url = $this->urlCallRecord($token, $id, true);
+        return $url;
     }
 
     /* INCOMING FAX METHODS */
@@ -815,11 +825,15 @@ class Bulutfon extends AbstractProvider
     /* ANNOUNCEMENT METHODS */
 
 
-    protected function urlAnnouncement(AccessToken $token, $id = null)
+    protected function urlAnnouncement(AccessToken $token, $id = null, $is_stream = false)
     {
         $url = "";
         if($id) {
-            $url = $this->baseUrl."/announcements/". $id ."?access_token=".$token;
+            if($is_stream) {
+                $url = $this->baseUrl."/announcements/". $id ."/stream?access_token=".$token;
+            } else {
+                $url = $this->baseUrl."/announcements/". $id ."?access_token=".$token;
+            }
         } else {
             $url = $this->baseUrl."/announcements?access_token=".$token;
         }
@@ -867,6 +881,11 @@ class Bulutfon extends AbstractProvider
     public function getAnnouncement(AccessToken $token, $id, $path) {
         $url = $this->urlAnnouncement($token, $id);
         $this->getFile($url, $path);
+    }
+
+    public function getAnnouncementStreamUrl(AccessToken $token, $id) {
+        $url = $this->urlAnnouncement($token, $id, true);
+        return $url;
     }
 
     public function prepareAnnouncementAttachment($path) {
