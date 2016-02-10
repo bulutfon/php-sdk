@@ -21,7 +21,7 @@ komutunu koşarak projenize dahil ettikten sonra kullanmaya başlayabilirsiniz.
 
 ```php
 	$provider = new \Bulutfon\OAuth2\Client\Provider\Bulutfon([
-    	'verifySSL        => false (Varsayılan olarak true'dur eğer ssl doğrulaması istenmiyorsa eklenmelidir.
+    	'verifySSL'        => false  // (Varsayılan olarak true'dur eğer ssl doğrulaması istenmiyorsa eklenmelidir.
 	]); 
 ```
 
