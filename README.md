@@ -277,4 +277,9 @@ Bunun için;
 methodunu kullanabilirsiniz
 
 Örnek kullanımları görmek için ve erişebileceğiniz değişkenler için [örnek uygulamamızı](https://github.com/bulutfon/php-sdk/tree/master/examples) inceleyebilirsiniz.
-    
+
+### Örnek Uygulamalar
+* [Composer Paket Yöneticisi](https://www.youtube.com/watch?v=Qqg6DS1x4Js)
+* [Ngrok nedir? Nasıl kullanılır?](https://www.youtube.com/watch?v=bnIs7q_-Olc)
+* [Composer paketiyle SMS nasıl gönderilir?](https://www.youtube.com/watch?v=5svLpM-fY18)
+* [Bulutfon PHP-SDK ile Dahililerin Listelenmesi](https://www.youtube.com/watch?v=khuqfHynEH0)
