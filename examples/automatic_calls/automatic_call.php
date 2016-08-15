@@ -27,6 +27,7 @@ if(isset($_GET['id'])) {
     <li>Title: <?= $automatic_call->title; ?></li>
     <li>Did: <?= $automatic_call->did; ?></li>
     <li>Announcement: <?= $automatic_call->announcement; ?></li>
+    <li>Sound Url: <?= $automatic_call->sound_url; ?></li>
     <li>Gather: <?= $automatic_call->gather; ?></li>
     <li>Created At: <?= $automatic_call->created_at; ?></li>
     <li>Recipients:

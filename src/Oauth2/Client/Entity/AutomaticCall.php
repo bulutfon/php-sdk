@@ -15,6 +15,7 @@ class AutomaticCall extends BaseEntity {
     protected $announcement;
     protected $gather;
     protected $recipients;
+    protected $sound_url;
     protected $call_range;
     protected $created_at;
 
@@ -25,6 +26,7 @@ class AutomaticCall extends BaseEntity {
             'title' => $this->title,
             'did' => $this->did,
             'announcement' => $this->announcement,
+            'sound_url' => $this->sound_url,
             'gather' => $this->gather,
             'recipients' => $this->recipients,
             'call_range' => $this->call_range,

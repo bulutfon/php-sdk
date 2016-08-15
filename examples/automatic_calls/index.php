@@ -21,6 +21,7 @@ $automatic_calls = $provider->getAutomaticCalls($token);
                 <th>Title</td>
                 <th>Did</td>
                 <th>Announcement</td>
+                <th>Sound Url</td>
                 <th>Gather</td>
                 <th>Created At</td>
                 <th></td>
@@ -33,6 +34,7 @@ $automatic_calls = $provider->getAutomaticCalls($token);
                     <td><?= $automatic_call->title; ?></td>
                     <td><?= $automatic_call->did; ?></td>
                     <td><?= $automatic_call->announcement; ?></td>
+                    <td><?= $automatic_call->sound_url; ?></td>
                     <td><?= $automatic_call->gather; ?></td>
                     <td><?= $automatic_call->created_at; ?></td>
                     <td><a href="automatic_call.php?id=<?= $automatic_call->id; ?>">Detail</a></td>

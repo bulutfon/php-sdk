@@ -15,7 +15,7 @@ $token = getAccessTokenFromSession($provider);
 <h2>Automatic Calls</h2>
 <?php
     $arr = array('title' => 'API ARAMA TEST', 'receivers' => '90850885xxxx,90850885yyyy',
-        'did' => "90850885xxxx", 'gather' => true, 'announcement_id' => 'yyy',
+        'did' => "90850885xxxx", 'gather' => true, 'announcement_id' => 'yyy', # veya sound_url => 'http://...'
 
         // Tarih ve saatler opsiyonel varsayılan olarak aktif => true start => 09:00 finish => 18:00 olacaktır
         'mon_active' => true, 'mon_start' => '12:15', 'mon_finish' => '12:15',
