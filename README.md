@@ -115,7 +115,7 @@ Bunun için;
         'email' => $_POST['email'], #required
         'did' => $_POST['did'], #required
         'number' => $_POST['number'], #required
-        'voicemail' => $_POST['voicemail'], #required
+        'voicemail' => $_POST['voicemail'], #optional
         'acl' => $_POST['acl'], #required
         'redirection_type' => $_POST['redirection_type'], #required
         'destination_type' => $_POST['destination_type'], #required unless redirection_type is not NONE or EXTERNAL
